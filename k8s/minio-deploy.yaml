@@ -7,17 +7,17 @@ metadata:
 spec:
   selector:
     matchLabels:
-      app: minio-deploy
+      app: minio
   strategy:
     type: Recreate
   replicas: 1
   template:
     metadata:
       labels:
-        app: minio-deploy
+        app: minio
     spec:
       volumes:
-      - name: minio-volume
+      - name: storage
         persistentVolumeClaim:
           claimName: minio-pvc
       containers:
@@ -25,7 +25,7 @@ spec:
         image: minio/minio:latest
         args:
         - server
-        - /data
+        - /storage
         resources:
           limits:
             memory: 512Mi
@@ -43,5 +43,5 @@ spec:
           hostPort: 9000
           name: minio
         volumeMounts:
-        - name: minio-volume
-          mountPath: "/data"
+        - name: storage
+          mountPath: "/storage"
