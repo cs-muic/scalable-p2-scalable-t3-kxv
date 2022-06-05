@@ -1,0 +1,47 @@
+apiVersion: apps/v1 #  for k8s versions before 1.9.0 use apps/v1beta2  and before 1.8.0 use extensions/v1beta1
+kind: Deployment
+metadata:
+  name: minio-deploy
+  labels:
+    app: minio-deploy
+spec:
+  selector:
+    matchLabels:
+      app: minio-deploy
+  strategy:
+    type: Recreate
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: minio-deploy
+    spec:
+      volumes:
+      - name: minio-volume
+        persistentVolumeClaim:
+          claimName: minio-pvc
+      containers:
+      - name: minio-deploy
+        image: minio/minio:latest
+        args:
+        - server
+        - /data
+        resources:
+          limits:
+            memory: 512Mi
+            cpu: "1000m"
+          requests:
+            memory: 512Mi
+            cpu: "512m"
+        env:
+        - name: MINIO_ROOT_USER
+          value: "minio"
+        - name: MINIO_ROOT_PASSWORD
+          value: "minio123"
+        ports:
+        - containerPort: 9000
+          hostPort: 9000
+          name: minio
+        volumeMounts:
+        - name: minio-volume
+          mountPath: "/data"
