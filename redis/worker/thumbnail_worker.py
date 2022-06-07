@@ -74,6 +74,7 @@ def main():
     named_logging = LOG.getLogger(name=INSTANCE_NAME)
     named_logging.info('Trying to connect to %s [%s]', host, REDIS_QUEUE_LOCATION)
     redis_conn = redis.Redis(host=host, *port)
+    named_logging.info('Connecting to %s [%s]', host, REDIS_QUEUE_LOCATION)
     watch_queue(
         redis_conn, 
         QUEUE_NAME, 
