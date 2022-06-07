@@ -8,4 +8,4 @@ COPY . /app
 WORKDIR /app
 
 RUN chmod +x ./thumbnail_worker.py
-CMD ["./thumbnail_worker.py"]
+CMD ["python", "./thumbnail_worker.py"]
