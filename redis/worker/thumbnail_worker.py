@@ -42,7 +42,7 @@ def watch_queue(redis_conn, queue_name, callback_func, timeout=30):
 def extract_resize(log, filename):
     try:
         log.info('Extracting and resizing input')
-        subprocess.run(['./script/extract_resize.sh', str(filename)])
+        subprocess.run(['./script/extract_resize.sh', str(filename)], shell=True)
         log.info('Done extracting and resizing input')
     except Exception:
         log.exception('Failed to extract and resize')
@@ -50,7 +50,7 @@ def extract_resize(log, filename):
 def gif_compose(log, filename):
     try:
         log.info('Composing GIF file')
-        subprocess.run(['./script/gif_compose.sh', str(filename)])
+        subprocess.run(['./script/gif_compose.sh', str(filename)], shell=True)
         log.info('Done composing GIF file')
     except Exception:
         log.exception('Failed to compose GIF file')
