@@ -19,5 +19,5 @@ RUN pip install -r requirements.txt
 
 COPY --from=build-stage /usr/local/bin/*.sh ./script/
 
-RUN chmod +x thumbnail_worker.py
-CMD ["python", "thumbnail_worker.py"]
+RUN chmod +x work_queue.py
+CMD ["python", "work_queue.py"]
