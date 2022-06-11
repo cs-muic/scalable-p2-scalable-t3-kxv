@@ -13,7 +13,7 @@ FROM python:3.9-alpine
 
 WORKDIR /app
 
-COPY ./redis/work_queue/ ./
+COPY work_queue/ ./
 
 RUN pip install -r requirements.txt
 

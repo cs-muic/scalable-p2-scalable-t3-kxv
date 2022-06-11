@@ -18,7 +18,7 @@ services:
       - REDIS_QUEUE=redis
   web-controller:
     build:
-      context: redis/web_controller
+      context: web_controller
     depends_on:
       redis:
         condition: service_healthy
