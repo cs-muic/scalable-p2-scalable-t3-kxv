@@ -1,4 +1,4 @@
 #!/bin/bash
 
-extract_resize.sh $1
-gif_compose.sh $2
+sh extract_resize.sh $1
+sh gif_compose.sh $2

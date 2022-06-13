@@ -1,17 +1,18 @@
-FROM ubuntu:18.04 AS build-stage 
+FROM ubuntu:20.04 AS build-stage
 
 WORKDIR /src
 
 COPY ./script/* /usr/local/bin/
 
-RUN apt-get update \
-    && apt-get --no-install-recommends install -y ffmpeg imagemagick \
-    && rm -rf /var/lib/apt/lists/*
 RUN chmod +x /usr/local/bin/*.sh
 
-FROM python:3.9-alpine
+FROM python:3.9
 
 WORKDIR /app
+
+RUN apt-get update \
+    && apt-get --no-install-recommends install -y ffmpeg imagemagick\
+    && rm -rf /var/lib/apt/lists/*
 
 COPY work_queue/ ./
 
