@@ -6,8 +6,8 @@ from minio_setup import upload_to_bucket, setup_bucket, download_from_bucket, do
 
 
 def extract_resize(unique_id, filename):
-    # downloading_from_bucket('videos', filename)  # pulling vid from minio
     try:
+        download_from_bucket('videos', filename)  # pulling vid from minio
         RedisResource.status_queue.enqueue(update_status, args=[unique_id, "waiting for a queue"])
         subprocess.run(f"sh './script/extract_resize.sh' '{str(filename)}' '{unique_id}'", shell=True)
         setup_bucket(unique_id)  # create a bucket for storing the frames with the random name above
