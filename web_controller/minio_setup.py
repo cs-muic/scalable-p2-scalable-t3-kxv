@@ -39,14 +39,19 @@ def download_bucket(in_bucket_name):
 def upload_to_bucket(local_dir, out_bucket_name):
     try:
         cwd = os.getcwd()
-        local_path = f'{cwd}/{local_dir}/'
-        print(f'local path: {local_path}')
+        local_path = f'{cwd}/{local_dir}'
         for local_file in glob.glob(local_path + '/**'):
-            print(f'local file: {local_file}')
             remote_path = local_file[1 + len(local_path):]
-            print(f'remote path: {remote_path}')
             MINIO_CLIENT.fput_object(out_bucket_name, remote_path, local_file)
-            print('Uploaded to bucket')
+    except Exception as err:
+        print('Error while uploading to the bucket')
+        raise err
+
+def upload_gif(filename, out_bucket_name):
+    try:
+        cwd = os.getcwd()
+        local_file = f'{cwd}/{filename}'
+        MINIO_CLIENT.fput_object(out_bucket_name, filename, local_file)
     except Exception as err:
         print('Error while uploading to the bucket')
         raise err
