@@ -59,7 +59,9 @@ def upload_gif(filename, out_bucket_name):
 def delete_bucket(bucket_name):
     try:
         obj_list = MINIO_CLIENT.list_objects(bucket_name)
-        return obj_list
+        for obj in obj_list:
+            MINIO_CLIENT.remove_object(bucket_name, obj.object_name)
+        MINIO_CLIENT.remove_bucket(bucket_name)
     except Exception as err:
         print('Error while deleting the bucket')
         raise err
