@@ -41,7 +41,7 @@ def upload_to_bucket(local_dir, out_bucket_name):
         cwd = os.getcwd()
         local_path = f'{cwd}/{local_dir}/'
         print(f'local path: {local_path}')
-        for local_file in glob.glob(local_path):
+        for local_file in glob.glob(local_path + '/**'):
             print(f'local file: {local_file}')
             remote_path = local_file[1 + len(local_path):]
             print(f'remote path: {remote_path}')
