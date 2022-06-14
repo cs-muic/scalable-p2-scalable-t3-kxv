@@ -9,8 +9,8 @@ def extract_resize(filename):
     bucket_name = uuid.uuid4().hex
     # downloading_from_bucket('videos', filename)  # pulling vid from minio
     try:
+        subprocess.run(f"sh './script/extract_resize.sh' '{str(filename)}' '{bucket_name}'", shell=True)
         setup_bucket(bucket_name)  # create a bucket for storing the frames with the random name above
-        subprocess.run(f"bash './script/extract_resize.sh' '{str(filename)}' '{bucket_name}'", shell=True)
         local_path = f'./{bucket_name}'
         upload_to_bucket(local_path, bucket_name, local_path)
         subprocess.run(f"rm -r ./{bucket_name}", shell=True)
@@ -21,6 +21,6 @@ def extract_resize(filename):
 
 def gif_compose(filename, bucket_name):
     try:
-        subprocess.run(f"bash './script/gif_compose.sh' '{str(filename)}' {bucket_name}", shell=True)
+        subprocess.run(f"sh './script/gif_compose.sh' '{str(filename)}' {bucket_name}", shell=True)
     except Exception:
         print('Failed to compose GIF file')

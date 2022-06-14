@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 folder="${2%}"
 mkdir ${folder}                                                                # creating a dir named frames
