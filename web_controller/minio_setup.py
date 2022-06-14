@@ -4,7 +4,7 @@ import glob
 
 ACCESS_KEY = os.environ.get('ACCESS_KEY', 'minio')
 SECRET_KEY = os.environ.get('SECRET_KEY', 'minio123')
-MINIO_CLIENT = Minio("0.0.0.0:9000", access_key=ACCESS_KEY, secret_key=SECRET_KEY, secure=False)
+MINIO_CLIENT = Minio("localhost:9000", access_key=ACCESS_KEY, secret_key=SECRET_KEY, secure=False)
 
 
 def setup_bucket(bucket_name):
