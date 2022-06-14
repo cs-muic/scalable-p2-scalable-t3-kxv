@@ -12,7 +12,7 @@ def extract_resize(unique_id, filename):
         subprocess.run(f"sh './script/extract_resize.sh' '{str(filename)}' '{unique_id}'", shell=True)
         setup_bucket(unique_id)  # create a bucket for storing the frames with the random name above
         local_path = f'./{unique_id}'
-        upload_to_bucket(local_path, unique_id, local_path)
+        upload_to_bucket(unique_id, unique_id, local_path)
         subprocess.run(f"rm -r ./{unique_id}", shell=True) 
         RedisResource.composing_queue.enqueue(gif_compose, args=[filename, unique_id])
         subprocess.run(f"rm -r ./{filename}", shell=True)

@@ -37,13 +37,16 @@ def download_bucket(in_bucket_name):
 
 
 def upload_to_bucket(local_path, out_bucket_name, minio_path):
-
-    for local_file in glob.glob(minio_path):
-        if not os.path.isfile(local_file):
-            upload_to_bucket(
-                local_file, out_bucket_name, f'{minio_path}/{os.path.basename(local_file)}'
-            )
-        else:
-            remote_path = os.path.join(
-                minio_path, local_file[1 + len(local_path):])
-            MINIO_CLIENT.fput_object(out_bucket_name, remote_path, local_file)
+    try:
+        for local_file in glob.glob(minio_path):
+            if not os.path.isfile(local_file):
+                upload_to_bucket(
+                    local_file, out_bucket_name, f'{minio_path}/{os.path.basename(local_file)}'
+                )
+            else:
+                remote_path = os.path.join(
+                    minio_path, local_file[1 + len(local_path):])
+                MINIO_CLIENT.fput_object(out_bucket_name, remote_path, local_file)
+    except Exception as err:
+        print('Error while uploading to the bucket')
+        raise err
