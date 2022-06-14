@@ -65,3 +65,11 @@ def delete_bucket(bucket_name):
     except Exception as err:
         print('Error while deleting the bucket')
         raise err
+
+def list_all_files(bucket_name):
+    try:
+        obj_list = MINIO_CLIENT.list_objects(bucket_name)
+        return obj_list
+    except Exception as err:
+        print('Error while listing files in the bucket')
+        raise err    
