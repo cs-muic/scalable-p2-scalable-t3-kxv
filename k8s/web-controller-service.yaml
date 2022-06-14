@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: web-controller
+spec:
+  selector:
+    app: web-controller
+  ports:
+  - protocol:  TCP
+    port:  80
+    targetPort:  5000

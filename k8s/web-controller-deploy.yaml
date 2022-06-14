@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web-controller
+  labels:
+    app: web-controller
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: web-controller
+  template:
+    metadata:
+      labels:
+        app: web-controller
+    spec:
+      containers:
+      - name: backend 
+        image: ghcr.io/cs-muic/scalable-p2-scalable-t3-kxv/web-controller
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 80
+        env:
+        - name: MINIO_ACCESS_KEY
+          valueFrom:
+            secretKeyRef:
+              name: web-controller-secret
+              key: username    
+        - name: MINIO_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: web-controller-secret
+              key: password
+        - name: REDIS_QUEUE
+          value: redis-service
+      imagePullSecrets:
+      - name: dockerconfigjson-github-com

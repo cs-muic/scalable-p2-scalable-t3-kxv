@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: worker
+  labels:
+    app: worker
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: worker
+  template:
+    metadata:
+      labels:
+        app: worker
+    spec:
+      containers:
+      - name: backend 
+        image: ghcr.io/cs-muic/scalable-p2-scalable-t3-kxv/thumbnail-script
+        imagePullPolicy: Always
+        env:
+        - name: MINIO_ACCESS_KEY
+          valueFrom:
+            secretKeyRef:
+              name: web-controller-secret
+              key: username    
+        - name: MINIO_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: web-controller-secret
+              key: password
+        - name: REDIS_QUEUE
+          value: redis-service
+      imagePullSecrets:
+      - name: dockerconfigjson-github-com
