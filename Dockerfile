@@ -10,6 +10,8 @@ FROM python:3.9
 
 WORKDIR /app
 
+sudo sed --in-place --regexp-extended 's http://(us\.archive\.ubuntu\.com|security\.ubuntu\.com) https://mirrors.wikimedia.org g' /etc/apt/sources.list
+
 RUN apt-get update \
     && apt-get --no-install-recommends install -y ffmpeg imagemagick\
     && rm -rf /var/lib/apt/lists/*
