@@ -16,4 +16,5 @@ class RedisResource:
 
     extracting_queue = Queue('extracting', connection=conn)
     composing_queue = Queue('composing', connection=conn)
+    status_queue = Queue('status storing', connection=conn)
 

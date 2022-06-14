@@ -3,7 +3,7 @@ from rq import Connection, Worker, Queue
 
 from resource import RedisResource
 
-listen = ['extracting', 'composing']
+listen = ['extracting', 'composing', 'status storing']
 
 if __name__ == '__main__':
     with Connection(RedisResource.conn):

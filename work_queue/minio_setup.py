@@ -16,29 +16,34 @@ def setup_bucket(bucket_name):
             print("Bucket already exists")
     except Exception as err:
         print('Error while setting up bucket')
-        print(err)
         raise err
 
 
 def download_from_bucket(in_bucket_name, object):
     try:
-        MINIO_CLIENT.fget_object(in_bucket_name, object, f'./{object}')
+        MINIO_CLIENT.fget_object(in_bucket_name, object, f'./{object}')            
     except Exception as err:
         print('Error while downloading from bucket')
         raise err
 
 
-def upload_to_bucket(local_path, out_bucket_name, minio_path):
+def download_bucket(in_bucket_name):
     try:
-        for local_file in glob.glob(minio_path):
-            if not os.path.isfile(local_file):
-                upload_to_bucket(
-                    local_file, out_bucket_name, f'{minio_path}/{os.path.basename(local_file)}'
-                )
-            else:
-                remote_path = os.path.join(
-                    minio_path, local_file[1 + len(local_path):])
-                MINIO_CLIENT.fput_object(out_bucket_name, remote_path, local_file)
-    except Exception as e:
-        print('Error while uploading to bucket')
-        raise e
+        for item in MINIO_CLIENT.list_objects(in_bucket_name,recursive=True):
+                    MINIO_CLIENT.fget_object(in_bucket_name,item.object_name, f'./{in_bucket_name}/{item.object_name}')
+    except Exception as err:
+        print('Error while downloading a bucket')
+        raise err
+
+
+def upload_to_bucket(local_path, out_bucket_name, minio_path):
+
+    for local_file in glob.glob(minio_path):
+        if not os.path.isfile(local_file):
+            upload_to_bucket(
+                local_file, out_bucket_name, f'{minio_path}/{os.path.basename(local_file)}'
+            )
+        else:
+            remote_path = os.path.join(
+                minio_path, local_file[1 + len(local_path):])
+            MINIO_CLIENT.fput_object(out_bucket_name, remote_path, local_file)

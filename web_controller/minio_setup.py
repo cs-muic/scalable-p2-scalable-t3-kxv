@@ -21,9 +21,18 @@ def setup_bucket(bucket_name):
 
 def download_from_bucket(in_bucket_name, object):
     try:
-        MINIO_CLIENT.fget_object(in_bucket_name, object, f'./{object}')
+        MINIO_CLIENT.fget_object(in_bucket_name, object, f'./{object}')            
     except Exception as err:
         print('Error while downloading from bucket')
+        raise err
+
+
+def download_bucket(in_bucket_name):
+    try:
+        for item in MINIO_CLIENT.list_objects(in_bucket_name,recursive=True):
+                    MINIO_CLIENT.fget_object(in_bucket_name,item.object_name, f'./{in_bucket_name}/{item.object_name}')
+    except Exception as err:
+        print('Error while downloading a bucket')
         raise err
 
 
