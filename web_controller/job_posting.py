@@ -4,7 +4,7 @@ from thumbnail_worker import extract_resize
 
 app = Flask(__name__)
 
-@app.route('/extract', methods=['POST'])
+@app.route('/api/extract', methods=['POST'])
 def post_extract_job():
     body = request.json
     filename = body.get('filename')
