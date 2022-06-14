@@ -55,3 +55,10 @@ def upload_gif(filename, out_bucket_name):
     except Exception as err:
         print('Error while uploading to the bucket')
         raise err
+
+def delete_bucket(bucket_name):
+    try:
+        MINIO_CLIENT.remove_bucket(bucket_name)
+    except Exception as err:
+        print('Error while deleting the bucket')
+        raise err

@@ -2,7 +2,7 @@
 import subprocess
 import uuid
 from resource import RedisResource
-from minio_setup import upload_to_bucket, setup_bucket, download_from_bucket, download_bucket, upload_gif
+from minio_setup import upload_to_bucket, setup_bucket, download_from_bucket, download_bucket, upload_gif, delete_bucket
 
 
 def extract_resize(unique_id, filename):
@@ -28,6 +28,7 @@ def gif_compose(filename, bucket_name):
         gif_name = filename.split('.')[0] + '.gif'
         upload_gif(gif_name, 'gifs')
         RedisResource.status_queue.enqueue(update_status, args=[bucket_name, "done composing GIF"])
+        delete_bucket(bucket_name)
     except Exception:
         print('Failed to compose GIF file')
 
