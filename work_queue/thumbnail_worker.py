@@ -3,6 +3,7 @@ import subprocess
 import uuid
 from resource import RedisResource
 from minio_setup import upload_to_bucket, setup_bucket, download_from_bucket, download_bucket, upload_gif, delete_bucket, list_all_files
+from web_controller.minio_setup import MINIO_CLIENT
 
 
 def extract_resize(unique_id, filename):
@@ -12,7 +13,7 @@ def extract_resize(unique_id, filename):
         subprocess.run(f"sh './script/extract_resize.sh' '{str(filename)}' '{unique_id}'", shell=True)
         setup_bucket(unique_id)  # create a bucket for storing the frames with the random name above
         upload_to_bucket(unique_id, unique_id)
-        subprocess.run(f"rm -r ./{unique_id}", shell=True)
+        subprocess.run(f"rm -r ./{unique_id}", shell=True) 
         RedisResource.composing_queue.enqueue(gif_compose, args=[filename, unique_id])
         subprocess.run(f"rm -r ./{filename}", shell=True)
     except Exception:
@@ -50,15 +51,18 @@ def gif_compose(filename, bucket_name):
     except Exception:
         print('Failed to compose GIF file')
 
-def list_all_gifs(bucket_name):
+
+def list_all(bucket_name):
     try:
         all_files = list_all_files(bucket_name)
-        files = []
+        files: list[str]  = []
         for file in all_files:
-            files.append(file.object_name)
+            name = str(file.object_name)
+            files.append(name)
         return files
     except Exception:
-        print('Failed to list all GIF files')
+        print('Failed to list all media files')
+        return []
 
 
 def update_status(ID, status):
@@ -66,4 +70,3 @@ def update_status(ID, status):
         RedisResource.conn.set(ID, status)
     except Exception as e:
         print(f'{e} | Failed to update job status')
-

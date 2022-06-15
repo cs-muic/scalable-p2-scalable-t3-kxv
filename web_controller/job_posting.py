@@ -1,7 +1,12 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, render_template
 from resource import RedisResource
-from thumbnail_worker import extract_resize, extract_resize_all, list_all_gifs
+from thumbnail_worker import extract_resize, extract_resize_all, list_all
+from minio_setup import get_elements, delete_gif, delete_all_elements
 import uuid
+import base64
+import io
+
+from web_controller.minio_setup import delete_all_elements
 
 app = Flask(__name__)
 
@@ -25,7 +30,7 @@ def extract_all():
 def all_gifs():
     body = request.json
     bucket_name = body.get('bucket')
-    all_gifs = list_all_gifs(bucket_name)
+    all_gifs = list_all(bucket_name)
     return jsonify({'gifs': all_gifs}), 200
 
 @app.route('/api/get-status/<jobID>', methods=['GET'])
@@ -36,5 +41,51 @@ def a_status_tracking(jobID):
     except Exception as e: 
         return jsonify({"error": "ID not found"}), 400
 
+@app.route('/api/get-gifs', methods=['POST'])
+def get_gifs():
+    try:
+        body = request.json
+        bucket_name = body.get('bucket')
+        gifs_binary = get_elements(bucket_name)
+        stream_strs = []
+        for b in gifs_binary:
+            stream_strs.append(f"data:image/gif;base64,{base64.b64encode(b.read()).decode('utf-8')}")
+        return stream_strs
+    except Exception as e:
+        return jsonify({"error": "failed to get elements"}), 400
 
+@app.route('api/get-vids', methods=['POST'])
+def get_vids():
+    try:
+        body = request.json
+        bucket_name = body.get('bucket')
+        vids_binary = get_elements(bucket_name)
+        stream_strs = []
+        for b in vids_binary:
+            stream_strs.append(f"data:video/mp4;base64,{base64.b64encode(b.read()).decode('utf-8')}")
+        return stream_strs
+    except Exception as e:
+        return jsonify({"error": "failed to get elements"}), 400
+
+@app.route('/api/delete-a-gif', methods=['POST'])
+def delete_a_gif():
+    try:
+        body = request.json
+        bucket_name = body.get('bucket')
+        file_name = body.get('filename')
+        delete_gif(file_name, bucket_name)
+        return jsonify({"status": "OK"}), 200
+    except Exception as e: 
+        return jsonify({"error": "cannot delete a gif"}), 400
+
+@app.route('/api/delete-all-gifs', methods=['POST'])
+def delete_all_gifs():
+    try:
+        body = request.json
+        bucket_name = body.get('bucket')
+        delete_all_elements(bucket_name)
+        return jsonify({"status": "OK"}), 200
+    except Exception as e: 
+        return jsonify({"error": "cannot delete all gifs"}), 400
+    
 app.run(host='0.0.0.0', port=5000)

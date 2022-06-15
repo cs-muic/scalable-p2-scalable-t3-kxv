@@ -47,6 +47,7 @@ def upload_to_bucket(local_dir, out_bucket_name):
         print('Error while uploading to the bucket')
         raise err
 
+
 def upload_gif(filename, out_bucket_name):
     try:
         cwd = os.getcwd()
@@ -56,15 +57,33 @@ def upload_gif(filename, out_bucket_name):
         print('Error while uploading to the bucket')
         raise err
 
-def delete_bucket(bucket_name):
+
+def delete_gif(filename, bucket_name):
+    try:
+        MINIO_CLIENT.remove_object(bucket_name, filename)
+    except Exception as e:
+        print('Error while deleting a gif')
+        raise e
+
+
+def delete_all_elements(bucket_name):
     try:
         obj_list = MINIO_CLIENT.list_objects(bucket_name)
         for obj in obj_list:
             MINIO_CLIENT.remove_object(bucket_name, obj.object_name)
+    except Exception as err:
+        print('Error while deleting all elements in the bucket')
+        raise err
+
+
+def delete_bucket(bucket_name):
+    try:
+        delete_all_elements(bucket_name)
         MINIO_CLIENT.remove_bucket(bucket_name)
     except Exception as err:
         print('Error while deleting the bucket')
         raise err
+
 
 def list_all_files(bucket_name):
     try:
@@ -72,4 +91,18 @@ def list_all_files(bucket_name):
         return obj_list
     except Exception as err:
         print('Error while listing files in the bucket')
-        raise err    
+        raise err   
+
+
+def get_elements(bucket_name):
+    try:
+        all_gifs = list_all_files(bucket_name)
+        binary_gifs = []
+        for gif in all_gifs:
+            elt = MINIO_CLIENT.get_object(bucket_name, gif.object_name)
+            binary_gifs.append(elt)
+        return binary_gifs
+    except Exception as e:
+        print("Failed while getting elements")
+        return [] 
+
