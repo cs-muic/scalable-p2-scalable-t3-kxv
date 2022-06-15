@@ -1,65 +1,122 @@
 <template>
-  <v-app>
-    <v-app-bar app color="teal darken-3" dark>
-      <v-spacer></v-spacer>
-
-      <span class="mr-4">"Display Room"</span>
-      <v-btn
-        href=""
-        target="_blank"
-        text
-        class="px-0 rounded-circle"
-        min-width="36"
+  <v-container class="my-5 mx-auto" max-width="300">
+    <v-row>
+      <v-col
+          v-for="n in 9"
+          :key="n"
+          class="d-flex child-flex"
+          cols="4"
       >
-        <v-icon>mdi-dots-vertical</v-icon>
-      </v-btn>
-    </v-app-bar>
-    <v-navigation-drawer class="teal darken-4" dark app>
-      <v-list>
+        <v-card>
+          <v-img
+              :src="image"
+              :aspect-ratio="16/9"
+              class="grey lighten-2"
+          >
+            <template v-slot:placeholder>
+              <v-row
+                  align="center"
+                  justify="center"
+              >
+                <v-progress-circular
+                    indeterminate
+                    color="grey lighten-5"
+                ></v-progress-circular>
+              </v-row>
+            </template>
+          </v-img>
+          <v-card-actions>
+            <v-card-title class="text-h6">
+              {{ n }}
+            </v-card-title>
+            <v-spacer></v-spacer>
+            <v-btn
+                class="ml-2"
+                text
+            >
+              Delete
+              <v-icon left>mdi-close-box</v-icon>
+            </v-btn>
+          </v-card-actions>
+        </v-card>
 
-        <v-list-item class="pl-2">
-          <v-list-item-icon class="ml-0 my-2 mr-3">
-            <v-icon x-large>mdi-cloud-circle</v-icon>
-          </v-list-item-icon>
-          <v-list-item-content>
-            <v-list-item-title>Display Room</v-list-item-title>
-          </v-list-item-content>
-        </v-list-item>
+      </v-col>
+    </v-row>
 
-        <v-list-item to="/">
-          <v-list-item-icon>
-            <v-icon>mdi-information-outline</v-icon>
-          </v-list-item-icon>
-          <v-list-item-content>
-            <v-list-item-title>Control Center</v-list-item-title>
-          </v-list-item-content>
-        </v-list-item>
+    <v-dialog v-model="check" max-width="500">
+      <template v-slot:activator="{ on, attrs }">
+        <v-btn
+            fab
+            dark
+            fixed
+            bottom
+            right
+            color="teal darken-3"
+            class="mb-16"
+            v-bind="attrs"
+            v-on="on"
+        >
+          <v-icon>mdi-format-list-checkbox</v-icon>
+        </v-btn>
+      </template>
+      <v-card
+          class="px-7 pt-7 pb-4 mx-auto text-center d-inline-block"
+      >
+        <v-card-title class="justify-center">
+          Progress
+        </v-card-title>
+        <v-card-actions class="justify-space-around">
+          <v-spacer></v-spacer>
+          <v-btn text @click="check = false" color="teal">
+            CLOSE
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
 
-      </v-list>
 
-    </v-navigation-drawer>
-    <v-main>
-      <router-view></router-view>
-    </v-main>
-  </v-app>
+    <v-dialog v-model="dialog" max-width="500">
+      <template v-slot:activator="{ on, attrs }">
+        <v-btn
+            fab
+            dark
+            fixed
+            bottom
+            right
+            color="teal darken-3"
+            v-bind="attrs"
+            v-on="on"
+        >
+          <v-icon>mdi-close-box-multiple</v-icon>
+        </v-btn>
+      </template>
+      <v-card
+          class="px-7 pt-7 pb-4 mx-auto text-center d-inline-block"
+      >
+        <v-card-title class="justify-center">
+          Do you want to delete all GIFs?
+        </v-card-title>
+        <v-card-actions class="justify-space-around">
+          <v-btn text @click="dialog = false" color="red">
+            NO
+          </v-btn>
+          <v-btn text @click="dialog = false" color="teal">
+            YES
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+  </v-container>
 </template>
 
 <script>
-// import Vue from "vue";
 export default {
-//   methods: {
-//     async logout() {
-//       let response = await Vue.axios.get("/api/logout");
-//       if (response.data.success) {
-//         await this.$router.push({ path: "/login" });
-//       }
-//     },
-//   },
+  data: () => ({
+    check: false,
+    dialog: false,
+    image: require("../../../../../../../Downloads/input.gif"),
+  })
 };
 </script>
 
-<style>
-div.logo {
-  font-size: 18px;
-}
-</style>
+<style></style>

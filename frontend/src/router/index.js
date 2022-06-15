@@ -8,12 +8,12 @@ Vue.use(VueRouter);
 const routes = [
   {
     path: "/",
-    name: "ControlCenter",
+    name: "Control Center",
     component: ControlCenter
   },
   {
     path: "/display-room",
-    name: "DisplayRoom",
+    name: "Display Room",
     component: DisplayRoom
   },
 ];
