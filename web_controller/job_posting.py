@@ -1,7 +1,7 @@
 from enum import unique
 from flask import Flask, jsonify, request
 from resource import RedisResource
-from thumbnail_worker import extract_resize, extract_resize_all, list_all, given_id
+from thumbnail_worker import extract_resize, list_all, given_id, update_status
 from minio_setup import get_elements, delete_gif, delete_all_elements
 import uuid
 import base64
@@ -13,6 +13,7 @@ def post_extract_job():
     body = request.json
     filename = body.get('filename')
     unique_id = uuid.uuid4().hex
+    RedisResource.status_queue.enqueue(update_status, args=[unique_id, "waiting for a queue"])
     RedisResource.extracting_queue.enqueue(extract_resize, args=[unique_id, filename])
     return jsonify({'video_name': filename,
                     'tracking_id': unique_id}), 200

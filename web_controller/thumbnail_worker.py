@@ -14,6 +14,7 @@ def given_id(bucket_name):
             'file_name': filename,
             'id': unique_id
         })
+        RedisResource.status_queue.enqueue(update_status, args=[unique_id, "waiting for a queue"])
     extract_resize_all(work_dict)
     return work_dict
 
@@ -21,11 +22,11 @@ def given_id(bucket_name):
 def extract_resize(unique_id, filename):
     try:
         download_from_bucket('videos', filename)  # pulling vid from minio
-        RedisResource.status_queue.enqueue(update_status, args=[unique_id, "waiting for a queue"])
         subprocess.run(f"sh './script/extract_resize.sh' '{str(filename)}' '{unique_id}'", shell=True)
         setup_bucket(unique_id)  # create a bucket for storing the frames with the random name above
         upload_to_bucket(unique_id, unique_id)
         subprocess.run(f"rm -r ./{unique_id}", shell=True) 
+        RedisResource.status_queue.enqueue(update_status, args=[unique_id, "done extracting"])
         RedisResource.composing_queue.enqueue(gif_compose, args=[filename, unique_id])
         subprocess.run(f"rm -r ./{filename}", shell=True)
     except Exception:
@@ -44,7 +45,6 @@ def extract_resize_all(work_dict):
 
 def gif_compose(filename, bucket_name):
     try:
-        RedisResource.status_queue.enqueue(update_status, args=[bucket_name, "done extracting"])
         download_bucket(bucket_name)
         subprocess.run(f"sh './script/gif_compose.sh' '{str(filename)}' {bucket_name}", shell=True)
         setup_bucket('gifs')
