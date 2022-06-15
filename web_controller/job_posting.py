@@ -51,7 +51,7 @@ def get_gifs():
     except Exception as e:
         return jsonify({"error": "failed to get elements"}), 400
 
-@app.route('api/get-vids', methods=['POST'])
+@app.route('/api/get-vids', methods=['POST'])
 def get_vids():
     try:
         body = request.json
