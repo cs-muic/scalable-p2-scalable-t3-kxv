@@ -1,6 +1,7 @@
+from enum import unique
 from flask import Flask, jsonify, request
 from resource import RedisResource
-from thumbnail_worker import extract_resize, extract_resize_all, list_all
+from thumbnail_worker import extract_resize, extract_resize_all, list_all, given_id
 from minio_setup import get_elements, delete_gif, delete_all_elements
 import uuid
 import base64
@@ -38,6 +39,23 @@ def a_status_tracking(jobID):
     except Exception as e: 
         return jsonify({"error": "ID not found"}), 400
 
+@app.route('/api/get-all-status', methods=['POST'])
+def all_status_tracking():
+    try:
+        body = request.json
+        bucket_name = body.get('bucket')
+        work_dict = given_id(bucket_name)
+        rec_status = []
+        for work in work_dict:
+            unique_id = work['id']
+            status = (RedisResource.conn.get(unique_id)).decode("utf-8")
+            rec_status.append({
+                unique_id: status
+            })
+        return jsonify({'all status': rec_status}), 200
+    except Exception as e:
+        return jsonify({"error": "not able to get all status"}), 400
+
 @app.route('/api/get-gifs', methods=['POST'])
 def get_gifs():
     try:
@@ -66,7 +84,7 @@ def get_vids():
                 'name': b.object_name, 
                 'file': f"data:video/mp4;base64,{base64.b64encode(b.read()).decode('utf-8')}"
             })
-        return jsonify({'gifs': stream_strs}), 200
+        return jsonify({'vids': stream_strs}), 200
     except Exception as e:
         return jsonify({"error": "failed to get elements"}), 400
 
