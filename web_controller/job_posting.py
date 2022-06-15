@@ -5,8 +5,6 @@ from minio_setup import get_elements, delete_gif, delete_all_elements
 import uuid
 import base64
 
-from web_controller.minio_setup import delete_all_elements
-
 app = Flask(__name__)
 
 @app.route('/api/extract', methods=['POST'])
