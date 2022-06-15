@@ -2,33 +2,22 @@
   <v-container class="my-5 mx-auto" max-width="300">
     <v-row>
       <v-col
-          v-for="n in 9"
-          :key="n"
+          v-for="vid in videos"
+          :key="vid"
           class="d-flex child-flex"
           cols="4"
       >
         <v-card>
-          <v-img
-              :src="`https://picsum.photos/500/300?image=${n * 5 + 10}`"
-              :lazy-src="`https://picsum.photos/10/6?image=${n * 5 + 10}`"
-              :aspect-ratio="16/9"
+          <video
+              :src="vid.file"
+              width="100%"
               class="grey lighten-2"
+              controls
           >
-            <template v-slot:placeholder>
-              <v-row
-                  align="center"
-                  justify="center"
-              >
-                <v-progress-circular
-                    indeterminate
-                    color="grey lighten-5"
-                ></v-progress-circular>
-              </v-row>
-            </template>
-          </v-img>
+          </video>
           <v-card-actions>
             <v-card-title class="text-h6">
-              {{ n }}
+              {{ vid.name }}
             </v-card-title>
             <v-spacer></v-spacer>
             <v-btn
@@ -110,11 +99,28 @@
 </template>
 
 <script>
+import Vue from "vue";
+
 export default {
   data: () => ({
     dialog: false,
     check: false,
-  })
+    videos: [],
+  }),
+
+  created() {
+    this.getVideos();
+  },
+
+  methods: {
+    async getVideos() {
+      let data = {
+        bucket: "videos"
+      }
+      let result = await Vue.axios.post("/api/get-vids", data);
+      this.videos = result.data.vids;
+    },
+  },
 };
 </script>
 

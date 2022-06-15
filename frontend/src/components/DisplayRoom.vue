@@ -9,7 +9,7 @@
       >
         <v-card>
           <v-img
-              :src="image"
+              :src="img.file"
               :aspect-ratio="16/9"
               class="grey lighten-2"
           >
@@ -27,7 +27,7 @@
           </v-img>
           <v-card-actions>
             <v-card-title class="text-h6">
-              {{ img }}
+              {{ img.name }}
             </v-card-title>
             <v-spacer></v-spacer>
             <v-btn
@@ -117,7 +117,6 @@ export default {
     check: false,
     dialog: false,
     images: [],
-    image: require("../../../../../../../Downloads/input.gif"),
   }),
 
   created() {
@@ -129,7 +128,7 @@ export default {
       let data = {
         bucket: "gifs"
       }
-      let result = await Vue.axios.post("/api/gifs", data);
+      let result = await Vue.axios.post("/api/get-gifs", data);
       this.images = result.data.gifs;
     },
   },
