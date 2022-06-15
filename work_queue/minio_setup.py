@@ -100,7 +100,10 @@ def get_elements(bucket_name):
         binary_gifs = []
         for gif in all_gifs:
             elt = MINIO_CLIENT.get_object(bucket_name, gif.object_name)
-            binary_gifs.append(elt)
+            binary_gifs.append({
+                'name': gif.object_name,
+                'data': elt,
+            })
         return binary_gifs
     except Exception as e:
         print("Failed while getting elements")
