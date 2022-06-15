@@ -47,7 +47,7 @@ def get_gifs():
         stream_strs = []
         for b in gifs_binary:
             stream_strs.append(f"data:image/gif;base64,{base64.b64encode(b.read()).decode('utf-8')}")
-        return stream_strs
+        return jsonify({'gifs': stream_strs}), 200
     except Exception as e:
         return jsonify({"error": "failed to get elements"}), 400
 
@@ -60,7 +60,7 @@ def get_vids():
         stream_strs = []
         for b in vids_binary:
             stream_strs.append(f"data:video/mp4;base64,{base64.b64encode(b.read()).decode('utf-8')}")
-        return stream_strs
+        return jsonify({'gifs': stream_strs}), 200
     except Exception as e:
         return jsonify({"error": "failed to get elements"}), 400
 
