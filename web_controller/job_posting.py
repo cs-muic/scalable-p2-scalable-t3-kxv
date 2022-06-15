@@ -35,7 +35,8 @@ def all_gifs():
 def a_status_tracking(jobID):
     try:
         status = (RedisResource.conn.get(jobID)).decode("utf-8")
-        return jsonify({jobID: status}), 200
+        return jsonify({'id': jobID,
+                        'status': status}), 200
     except Exception as e: 
         return jsonify({"error": "ID not found"}), 400
 
@@ -50,7 +51,8 @@ def all_status_tracking():
             unique_id = work['id']
             status = (RedisResource.conn.get(unique_id)).decode("utf-8")
             rec_status.append({
-                unique_id: status
+                'id': unique_id,
+                'status': status
             })
         return jsonify({'all_status': rec_status}), 200
     except Exception as e:
