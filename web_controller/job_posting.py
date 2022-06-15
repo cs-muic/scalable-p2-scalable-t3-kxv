@@ -14,15 +14,15 @@ def post_extract_job():
     filename = body.get('filename')
     unique_id = uuid.uuid4().hex
     RedisResource.extracting_queue.enqueue(extract_resize, args=[unique_id, filename])
-    return jsonify({'video name': filename,
-                    'tracking id': unique_id}), 200
+    return jsonify({'video_name': filename,
+                    'tracking_id': unique_id}), 200
 
 @app.route('/api/extract-all', methods=['POST'])
 def extract_all():
     body = request.json
     bucket_name = body.get('bucket')
-    RedisResource.extracting_queue.enqueue(extract_resize_all, args=[bucket_name])
-    return jsonify({'bucket name': bucket_name}), 200
+    RedisResource.extracting_queue.enqueue(given_id, args=[bucket_name])
+    return jsonify({'bucket_name': bucket_name}), 200
 
 @app.route('/api/gifs', methods=['POST'])
 def all_gifs():
@@ -52,7 +52,7 @@ def all_status_tracking():
             rec_status.append({
                 unique_id: status
             })
-        return jsonify({'all status': rec_status}), 200
+        return jsonify({'all_status': rec_status}), 200
     except Exception as e:
         return jsonify({"error": "not able to get all status"}), 400
 
