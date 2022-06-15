@@ -2,8 +2,8 @@
   <v-container class="my-5 mx-auto" max-width="300">
     <v-row>
       <v-col
-          v-for="n in 9"
-          :key="n"
+          v-for="img in images"
+          :key="img"
           class="d-flex child-flex"
           cols="4"
       >
@@ -27,7 +27,7 @@
           </v-img>
           <v-card-actions>
             <v-card-title class="text-h6">
-              {{ n }}
+              {{ img }}
             </v-card-title>
             <v-spacer></v-spacer>
             <v-btn
@@ -110,12 +110,29 @@
 </template>
 
 <script>
+import Vue from "vue";
+
 export default {
   data: () => ({
     check: false,
     dialog: false,
+    images: [],
     image: require("../../../../../../../Downloads/input.gif"),
-  })
+  }),
+
+  created() {
+    this.getGIFs();
+  },
+
+  methods: {
+    async getGIFs() {
+      let data = {
+        bucket: "gifs"
+      }
+      let result = await Vue.axios.post("/api/gifs", data);
+      this.images = result.data.gifs;
+    },
+  },
 };
 </script>
 

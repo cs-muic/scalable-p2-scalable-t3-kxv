@@ -1,16 +1,19 @@
 module.exports = {
   transpileDependencies: ["vuetify"],
   devServer: {
-    host: "localhost", // frontend hostname or ip
-    // disableHostCheck: true,
-    port: 8000, // frontend port
-    https: false, // no ssl
+    host: "0.0.0.0",
+    port: 8000,
+    https: false,
     proxy: {
       "/api": {
-        // proxy everything from frontend http://localhost:8080/api/** to backend at http://localhost:8081/api/**
-        // that is why all api path on backend should begin with /api
-        target: "http://localhost:8080",
+        target: "http://127.0.0.1",
       },
+    },
+    headers: {
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, PATCH, OPTIONS",
+      "Access-Control-Allow-Headers":
+          "X-Requested-With, content-type, Authorization",
     },
   },
 };
