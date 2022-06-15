@@ -1,10 +1,9 @@
-from flask import Flask, jsonify, request, render_template
+from flask import Flask, jsonify, request
 from resource import RedisResource
 from thumbnail_worker import extract_resize, extract_resize_all, list_all
 from minio_setup import get_elements, delete_gif, delete_all_elements
 import uuid
 import base64
-import io
 
 from web_controller.minio_setup import delete_all_elements
 

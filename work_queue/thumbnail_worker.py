@@ -3,7 +3,6 @@ import subprocess
 import uuid
 from resource import RedisResource
 from minio_setup import upload_to_bucket, setup_bucket, download_from_bucket, download_bucket, upload_gif, delete_bucket, list_all_files
-from web_controller.minio_setup import MINIO_CLIENT
 
 
 def extract_resize(unique_id, filename):
