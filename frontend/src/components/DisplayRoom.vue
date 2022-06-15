@@ -3,7 +3,7 @@
     <v-row>
       <v-col
           v-for="img in images"
-          :key="img"
+          :key="img.name"
           class="d-flex child-flex"
           cols="4"
       >
@@ -33,6 +33,7 @@
             <v-btn
                 class="ml-2"
                 text
+                @click="deleteGIF(img.name)"
             >
               Delete
               <v-icon left>mdi-close-box</v-icon>
@@ -41,6 +42,20 @@
         </v-card>
 
       </v-col>
+    </v-row>
+
+    <v-row
+        align="center"
+        justify="center"
+    >
+      <v-progress-circular
+          v-show="loading"
+          :size="70"
+          :width="7"
+          color="teal"
+          indeterminate
+          class="my-16"
+      ></v-progress-circular>
     </v-row>
 
     <v-dialog v-model="check" max-width="500">
@@ -86,6 +101,7 @@
             color="teal darken-3"
             v-bind="attrs"
             v-on="on"
+            @click="getStatus"
         >
           <v-icon>mdi-close-box-multiple</v-icon>
         </v-btn>
@@ -100,7 +116,7 @@
           <v-btn text @click="dialog = false" color="red">
             NO
           </v-btn>
-          <v-btn text @click="dialog = false" color="teal">
+          <v-btn text @click="deleteAll" color="teal">
             YES
           </v-btn>
         </v-card-actions>
@@ -116,6 +132,7 @@ export default {
   data: () => ({
     check: false,
     dialog: false,
+    loading: true,
     images: [],
   }),
 
@@ -130,7 +147,37 @@ export default {
       }
       let result = await Vue.axios.post("/api/get-gifs", data);
       this.images = result.data.gifs;
+      this.loading = false;
     },
+
+    async deleteAll() {
+      this.dialog = false;
+      let data = {
+        bucket: "gifs"
+      }
+      await Vue.axios.post("/api/delete-all-gifs", data)
+      await this.getGIFs();
+    },
+
+    async deleteGIF(name) {
+      let data = {
+        bucket: "gifs",
+        filename: name
+      }
+      await Vue.axios.post("/api/delete-a-gif", data)
+    },
+
+    async getStatus() {
+      let queue = this.$store.state.queue.slice();
+      for (let i = 0; i < queue.length; i++) {
+        let s = queue[i];
+        let state = await Vue.axios.get("/api/get-status/" + s.id)
+        console.warn(state.data);
+        console.warn(state.data.id);
+        console.warn(state.data.status);
+        await this.$store.dispatch("setQueue", state.data.id, state.data.status);
+      }
+    }
   },
 };
 </script>

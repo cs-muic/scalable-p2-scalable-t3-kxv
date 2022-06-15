@@ -3,7 +3,7 @@
     <v-row>
       <v-col
           v-for="vid in videos"
-          :key="vid"
+          :key="vid.name"
           class="d-flex child-flex"
           cols="4"
       >
@@ -23,6 +23,7 @@
             <v-btn
                 class="ml-2"
                 text
+                @click="extractVideo(vid.name)"
             >
               Convert
               <v-icon left>mdi-plus-box</v-icon>
@@ -31,6 +32,20 @@
         </v-card>
 
       </v-col>
+    </v-row>
+
+    <v-row
+        align="center"
+        justify="center"
+    >
+      <v-progress-circular
+          v-show="loading"
+          :size="70"
+          :width="7"
+          color="teal"
+          indeterminate
+          class="my-16"
+      ></v-progress-circular>
     </v-row>
 
     <v-dialog v-model="check" max-width="500">
@@ -45,6 +60,7 @@
             class="mb-16"
             v-bind="attrs"
             v-on="on"
+            @click="getStatus"
         >
           <v-icon>mdi-format-list-checkbox</v-icon>
         </v-btn>
@@ -55,6 +71,9 @@
         <v-card-title class="justify-center">
           Progress
         </v-card-title>
+        <v-card-text v-for="s in this.$store.state.queue" :key="s.id">
+          <span>{{ s.id }}</span><v-spacer></v-spacer><span>done</span>
+        </v-card-text>
         <v-card-actions class="justify-space-around">
           <v-spacer></v-spacer>
           <v-btn text @click="check = false" color="teal">
@@ -89,7 +108,7 @@
           <v-btn text @click="dialog = false" color="red">
             NO
           </v-btn>
-          <v-btn text @click="dialog = false" color="teal">
+          <v-btn text @click="extractAll" color="teal">
             YES
           </v-btn>
         </v-card-actions>
@@ -105,6 +124,7 @@ export default {
   data: () => ({
     dialog: false,
     check: false,
+    loading: true,
     videos: [],
   }),
 
@@ -119,7 +139,40 @@ export default {
       }
       let result = await Vue.axios.post("/api/get-vids", data);
       this.videos = result.data.vids;
+      this.loading = false;
     },
+
+    async extractAll() {
+      this.dialog = false;
+      let data = {
+        bucket: "videos"
+      }
+      await Vue.axios.post("/api/extract-all", data)
+    },
+
+    async extractVideo(name) {
+      let data = {
+        filename: name
+      }
+      let result = await Vue.axios.post("/api/extract", data);
+      let payload = {
+        id: result.data.tracking_id,
+        status: ""
+      }
+      await this.$store.dispatch("setQueue", payload.id, payload.status);
+    },
+
+    async getStatus() {
+      let queue = this.$store.state.queue.slice();
+      for (let i = 0; i < queue.length; i++) {
+        let s = queue[i];
+        let state = await Vue.axios.get("/api/get-status/" + s.id)
+        console.warn(state.data);
+        console.warn(state.data.id);
+        console.warn(state.data.status);
+        await this.$store.dispatch("setQueue", state.data.id, state.data.status);
+      }
+    }
   },
 };
 </script>
