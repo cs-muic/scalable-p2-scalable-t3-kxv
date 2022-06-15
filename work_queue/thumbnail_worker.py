@@ -22,13 +22,16 @@ def given_id(bucket_name):
 def extract_resize(unique_id, filename):
     try:
         download_from_bucket('videos', filename)  # pulling vid from minio
-        subprocess.run(f"sh './script/extract_resize.sh' '{str(filename)}' '{unique_id}'", shell=True)
+        extracting = subprocess.Popen(f"sh './script/extract_resize.sh' '{str(filename)}' '{unique_id}'", shell=True)
+        extracting.wait()
         setup_bucket(unique_id)  # create a bucket for storing the frames with the random name above
         upload_to_bucket(unique_id, unique_id)
-        subprocess.run(f"rm -r ./{unique_id}", shell=True) 
+        removing_frames_1 = subprocess.Popen(f"rm -r ./{unique_id}", shell=True) 
+        removing_frames_1.wait()
         RedisResource.status_queue.enqueue(update_status, args=[unique_id, "done extracting"])
+        removing_frames_2 = subprocess.Popen(f"rm -r ./{filename}", shell=True)
+        removing_frames_2.wait()
         RedisResource.composing_queue.enqueue(gif_compose, args=[filename, unique_id])
-        subprocess.run(f"rm -r ./{filename}", shell=True)
     except Exception:
         RedisResource.status_queue.enqueue(update_status, args=[unique_id, "failed to extract and resize"])
 
@@ -46,7 +49,8 @@ def extract_resize_all(work_dict):
 def gif_compose(filename, bucket_name):
     try:
         download_bucket(bucket_name)
-        subprocess.run(f"sh './script/gif_compose.sh' '{str(filename)}' {bucket_name}", shell=True)
+        composing = subprocess.Popen(f"sh './script/gif_compose.sh' '{str(filename)}' {bucket_name}", shell=True)
+        composing.wait()
         setup_bucket('gifs')
         gif_name = filename.split('.')[0] + '.gif'
         upload_gif(gif_name, 'gifs')
