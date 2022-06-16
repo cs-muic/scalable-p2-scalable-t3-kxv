@@ -14,7 +14,7 @@ def given_id(bucket_name):
             'file_name': filename,
             'id': unique_id
         })
-        RedisResource.status_queue.enqueue(update_status, args=[unique_id, "waiting for a queue"])
+        RedisResource.status_queue.enqueue(update_status, args=[unique_id, "extracting"])
     RedisResource.extracting_queue.enqueue(extract_resize_all, args=[work_dict])
     return work_dict
 
@@ -28,12 +28,12 @@ def extract_resize(unique_id, filename):
         upload_to_bucket(unique_id, unique_id)
         removing_frames_1 = subprocess.Popen(f"rm -r ./{unique_id}", shell=True) 
         removing_frames_1.wait()
-        RedisResource.status_queue.enqueue(update_status, args=[unique_id, "done extracting"])
+        RedisResource.status_queue.enqueue(update_status, args=[unique_id, "composing"])
         removing_frames_2 = subprocess.Popen(f"rm -r ./{filename}", shell=True)
         removing_frames_2.wait()
         RedisResource.composing_queue.enqueue(gif_compose, args=[filename, unique_id])
     except Exception:
-        RedisResource.status_queue.enqueue(update_status, args=[unique_id, "failed to extract and resize"])
+        RedisResource.status_queue.enqueue(update_status, args=[unique_id, "failed"])
 
 
 def extract_resize_all(work_dict):
@@ -54,7 +54,7 @@ def gif_compose(filename, bucket_name):
         setup_bucket('gifs')
         gif_name = filename.split('.')[0] + '.gif'
         upload_gif(gif_name, 'gifs')
-        RedisResource.status_queue.enqueue(update_status, args=[bucket_name, "done composing GIF"])
+        RedisResource.status_queue.enqueue(update_status, args=[bucket_name, "completed"])
         delete_bucket(bucket_name)
     except Exception:
         print('Failed to compose GIF file')
@@ -77,4 +77,4 @@ def update_status(ID, status):
     try:
         RedisResource.conn.set(ID, status)
     except Exception as e:
-        RedisResource.conn.set(ID, "failed to compose gif file")
+        RedisResource.conn.set(ID, "n/a")

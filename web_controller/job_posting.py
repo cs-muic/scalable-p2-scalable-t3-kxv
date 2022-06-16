@@ -13,7 +13,7 @@ def post_extract_job():
     body = request.json
     filename = body.get('filename')
     unique_id = uuid.uuid4().hex
-    RedisResource.status_queue.enqueue(update_status, args=[unique_id, "waiting for a queue"])
+    RedisResource.status_queue.enqueue(update_status, args=[unique_id, "extracting"])
     RedisResource.extracting_queue.enqueue(extract_resize, args=[unique_id, filename])
     return jsonify({'video_name': filename,
                     'tracking_id': unique_id}), 200
