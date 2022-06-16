@@ -40,7 +40,7 @@ def a_status_tracking(jobID):
                         'status': status}), 200
     except Exception as e: 
         return jsonify({'id': jobID,
-                        'status': 'retrieving status'}), 200
+                        'status': 'waiting for a queue'}), 200
 
 @app.route('/api/get-all-status', methods=['POST'])
 def all_status_tracking():

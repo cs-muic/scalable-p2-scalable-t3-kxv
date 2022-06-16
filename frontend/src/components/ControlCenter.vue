@@ -159,7 +159,15 @@ export default {
       let data = {
         bucket: "videos"
       }
-      await Vue.axios.post("/api/extract-all", data)
+      let result = await Vue.axios.post("/api/extract-all", data);
+      for (const r of result.data.id_lst) {
+        let payload = {
+          name: r.file_name,
+          id: r.id
+        }
+        await this.$store.dispatch("setQueue", payload);
+        localStorage.setItem("queue", this.$store.state.queue);
+      }
     },
 
     async extractVideo(name) {
