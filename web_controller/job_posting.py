@@ -39,7 +39,8 @@ def a_status_tracking(jobID):
         return jsonify({'id': jobID,
                         'status': status}), 200
     except Exception as e: 
-        return jsonify({"error": "ID not found"}), 400
+        return jsonify({'id': jobID,
+                        'status': 'retrieving status'}), 200
 
 @app.route('/api/get-all-status', methods=['POST'])
 def all_status_tracking():
