@@ -15,7 +15,7 @@ def given_id(bucket_name):
             'id': unique_id
         })
         RedisResource.status_queue.enqueue(update_status, args=[unique_id, "waiting for a queue"])
-    extract_resize_all(work_dict)
+    RedisResource.extracting_queue.enqueue(extract_resize_all, args=[work_dict])
     return work_dict
 
 

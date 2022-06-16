@@ -22,8 +22,8 @@ def post_extract_job():
 def extract_all():
     body = request.json
     bucket_name = body.get('bucket')
-    RedisResource.extracting_queue.enqueue(given_id, args=[bucket_name])
-    return jsonify({'bucket_name': bucket_name}), 200
+    work_dict = given_id(bucket_name)
+    return jsonify({'id_lst': work_dict}), 200
 
 @app.route('/api/gifs', methods=['POST'])
 def all_gifs():
