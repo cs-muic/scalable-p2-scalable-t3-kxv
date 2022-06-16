@@ -9,7 +9,11 @@ export default new Vuex.Store({
     },
     mutations: {
         setQueue(state, payload) {
-            state.queue = payload;
+            let data = {
+                name: payload.name,
+                id: payload.id
+            }
+            state.queue.push(data);
         },
     },
     actions: {

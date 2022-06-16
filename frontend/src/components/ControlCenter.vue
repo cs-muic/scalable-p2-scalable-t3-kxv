@@ -71,10 +71,20 @@
         <v-card-title class="justify-center">
           Progress
         </v-card-title>
-        <v-card-text v-for="s in this.$store.state.queue" :key="s.id">
-          <span>{{ s.id }}</span><v-spacer></v-spacer><span>done</span>
+        <v-progress-linear
+            v-if="statusLoading"
+            color="teal"
+            indeterminate
+            rounded
+            height="6"
+        ></v-progress-linear>
+        <v-card-text v-else v-for="q in queue" :key="q.id">
+          <span>{{ q.name }}</span><v-spacer></v-spacer><span>{{ q.status }}</span>
         </v-card-text>
         <v-card-actions class="justify-space-around">
+          <v-btn text @click="getStatus" color="teal">
+            REFRESH
+          </v-btn>
           <v-spacer></v-spacer>
           <v-btn text @click="check = false" color="teal">
             CLOSE
@@ -126,6 +136,8 @@ export default {
     check: false,
     loading: true,
     videos: [],
+    queue: [],
+    statusLoading: true,
   }),
 
   created() {
@@ -156,22 +168,25 @@ export default {
       }
       let result = await Vue.axios.post("/api/extract", data);
       let payload = {
-        id: result.data.tracking_id,
-        status: ""
+        name: result.data.video_name,
+        id: result.data.tracking_id
       }
-      await this.$store.dispatch("setQueue", payload.id, payload.status);
+      await this.$store.dispatch("setQueue", payload);
+      localStorage.setItem("queue", this.$store.state.queue);
     },
 
     async getStatus() {
-      let queue = this.$store.state.queue.slice();
-      for (let i = 0; i < queue.length; i++) {
-        let s = queue[i];
-        let state = await Vue.axios.get("/api/get-status/" + s.id)
-        console.warn(state.data);
-        console.warn(state.data.id);
-        console.warn(state.data.status);
-        await this.$store.dispatch("setQueue", state.data.id, state.data.status);
+      this.queue = [];
+      this.statusLoading = true;
+      for (const q of this.$store.state.queue) {
+        let state = await Vue.axios.get("/api/get-status/" + q.id);
+        let data = {
+          name: q.name,
+          status: state.data.status
+        }
+        this.queue.push(data);
       }
+      this.statusLoading = false;
     }
   },
 };

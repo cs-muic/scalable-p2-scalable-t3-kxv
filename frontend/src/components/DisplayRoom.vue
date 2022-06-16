@@ -70,6 +70,7 @@
             class="mb-16"
             v-bind="attrs"
             v-on="on"
+            @click="getStatus"
         >
           <v-icon>mdi-format-list-checkbox</v-icon>
         </v-btn>
@@ -80,7 +81,20 @@
         <v-card-title class="justify-center">
           Progress
         </v-card-title>
+        <v-progress-linear
+            v-if="statusLoading"
+            color="teal"
+            indeterminate
+            rounded
+            height="6"
+        ></v-progress-linear>
+        <v-card-text v-else v-for="q in queue" :key="q.id">
+          <span>{{ q.name }}</span><v-spacer></v-spacer><span>{{ q.status }}</span>
+        </v-card-text>
         <v-card-actions class="justify-space-around">
+          <v-btn text @click="getStatus" color="teal">
+            REFRESH
+          </v-btn>
           <v-spacer></v-spacer>
           <v-btn text @click="check = false" color="teal">
             CLOSE
@@ -101,7 +115,6 @@
             color="teal darken-3"
             v-bind="attrs"
             v-on="on"
-            @click="getStatus"
         >
           <v-icon>mdi-close-box-multiple</v-icon>
         </v-btn>
@@ -134,6 +147,8 @@ export default {
     dialog: false,
     loading: true,
     images: [],
+    queue: [],
+    statusLoading: true,
   }),
 
   created() {
@@ -165,18 +180,21 @@ export default {
         filename: name
       }
       await Vue.axios.post("/api/delete-a-gif", data)
+      await this.getGIFs();
     },
 
     async getStatus() {
-      let queue = this.$store.state.queue.slice();
-      for (let i = 0; i < queue.length; i++) {
-        let s = queue[i];
-        let state = await Vue.axios.get("/api/get-status/" + s.id)
-        console.warn(state.data);
-        console.warn(state.data.id);
-        console.warn(state.data.status);
-        await this.$store.dispatch("setQueue", state.data.id, state.data.status);
+      this.queue = [];
+      this.statusLoading = true;
+      for (const q of this.$store.state.queue) {
+        let state = await Vue.axios.get("/api/get-status/" + q.id);
+        let data = {
+          name: q.name,
+          status: state.data.status
+        }
+        this.queue.push(data);
       }
+      this.statusLoading = false;
     }
   },
 };
