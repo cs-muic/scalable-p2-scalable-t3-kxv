@@ -23,3 +23,4 @@ RUN yarn build
 FROM nginx:1.21-alpine as production-stage
 # copy the build from previous stage 
 COPY --from=build-stage /app/dist /usr/share/nginx/html
+COPY default.conf /etc/nginx/conf.d
